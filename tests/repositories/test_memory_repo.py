@@ -8,6 +8,14 @@ def test_store_key_value():
 
     assert repo.load("akey") == "avalue"
 
+
+def test_key_shall_not_be_string():
+    repo = mr.MemoryRepo()
+    repo.store(1, "avalue")
+
+    assert repo.load(1) == "avalue"
+
+
 def test_hashing_is_stable():
     fake = Faker()
 
@@ -16,15 +24,13 @@ def test_hashing_is_stable():
 
     for i in range(1000):
         value = fake.text()
-        repo.store(value[:50], value)
+        dataset.append((i, value))
 
-    repo._add_shards(num=1)
+    for item in dataset:
+        repo.store(item[1][:50], item)
 
-    shards_population = repo.get_shards_population()
-    total_population = sum(shards_population)
-
-    assert all([i < total_population / 2 for i in shards_population])
-    assert all([i > 0 for i in shards_population])
+    for item in dataset:
+        assert repo.load(item[1][:50]) == item
 
 
 def test_init_accepts_number_of_shards():
@@ -41,7 +47,7 @@ def test_init_accepts_number_of_replicas():
     assert repo.load("akey") == "avalue"
 
 
-def test_init_accepts_noth_number_of_shards_and_replicas():
+def test_init_accepts_both_number_of_shards_and_replicas():
     repo = mr.MemoryRepo(shards=4, replicas=2)
     repo.store("akey", "avalue")
 
@@ -56,6 +62,12 @@ def test_repo_knows_the_numer_of_shards():
 def test_repo_can_add_shard_when_empty():
     repo = mr.MemoryRepo(shards=4)
     repo.add_shards(num=1)
+    assert repo.num_shards == 5
+
+
+def test_repo_can_add_shard_without_balancing():
+    repo = mr.MemoryRepo(shards=4)
+    repo.add_shards(num=1, balance=False)
     assert repo.num_shards == 5
 
 
@@ -78,7 +90,7 @@ def test_massive_population_is_balanced():
     repo = mr.MemoryRepo(shards=4)
     for i in range(1000):
         value = fake.text()
-        repo.store(value[:50], value)
+        repo.store(i, value)
 
     shards_population = repo.get_shards_population()
     total_population = sum(shards_population)
@@ -87,18 +99,31 @@ def test_massive_population_is_balanced():
     assert all([i > 0 for i in shards_population])
 
 
+# def test_adding_shard_without_balancing_works():
+#     fake = Faker()
+#
+#     repo = mr.MemoryRepo(shards=4)
+#     for i in range(1000):
+#         value = fake.text()
+#         repo.store(i, value)
+#
+#     repo.add_shards(num=1, balance=False)
+#
+#     assert 0 in repo.get_shards_population()
+#
 def test_massive_population_after_shard_addition_is_balanced():
     fake = Faker()
 
     repo = mr.MemoryRepo(shards=4)
     for i in range(1000):
         value = fake.text()
-        repo.store(value[:50], value)
+        repo.store(i, value)
 
-    repo._add_shards(num=1)
+    repo.add_shards(num=1)
 
     shards_population = repo.get_shards_population()
     total_population = sum(shards_population)
 
     assert all([i < total_population / 2 for i in shards_population])
     assert all([i > 0 for i in shards_population])
+
