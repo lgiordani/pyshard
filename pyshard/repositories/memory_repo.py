@@ -9,16 +9,8 @@ class MemoryRepo(object):
 
         # Each shard tuple is made by (shard_idx, replica_hash)
         self._shard_tuples = []
-        for i in range(shards):
-            self._shards.append({})
 
-            # This computes the hash of each replica label
-            for j in range(self._num_replicas):
-                replica_label = "shard{}/{}".format(i, j)
-                hashed_replica_label = self._hash_key(replica_label)
-                self._shard_tuples.append((i, hashed_replica_label))
-
-        self._shard_tuples = sorted(self._shard_tuples, key=lambda x: x[1])
+        self.add_shards(shards)
 
     @property
     def num_shards(self):
@@ -41,7 +33,16 @@ class MemoryRepo(object):
         return self._shard_tuples[hashed_labels_idx][0]
 
     def add_shards(self, num):
-        self._shards.append({})
+        for i in range(num):
+            self._shards.append({})
+
+            # This computes the hash of each replica label
+            for replica_num in range(self._num_replicas):
+                replica_label = "shard{}/{}".format(len(self._shards), replica_num)
+                hashed_replica_label = self._hash_key(replica_label)
+                self._shard_tuples.append((i, hashed_replica_label))
+
+            self._shard_tuples = sorted(self._shard_tuples, key=lambda x: x[1])
 
     def store(self, key, value):
         idx = self._key_to_shard_idx(key)

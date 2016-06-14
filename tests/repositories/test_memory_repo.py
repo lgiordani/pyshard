@@ -8,6 +8,24 @@ def test_store_key_value():
 
     assert repo.load("akey") == "avalue"
 
+def test_hashing_is_stable():
+    fake = Faker()
+
+    repo = mr.MemoryRepo(shards=4)
+    dataset = []
+
+    for i in range(1000):
+        value = fake.text()
+        repo.store(value[:50], value)
+
+    repo._add_shards(num=1)
+
+    shards_population = repo.get_shards_population()
+    total_population = sum(shards_population)
+
+    assert all([i < total_population / 2 for i in shards_population])
+    assert all([i > 0 for i in shards_population])
+
 
 def test_init_accepts_number_of_shards():
     repo = mr.MemoryRepo(shards=4)
@@ -77,7 +95,7 @@ def test_massive_population_after_shard_addition_is_balanced():
         value = fake.text()
         repo.store(value[:50], value)
 
-    repo.add_shards(num=1)
+    repo._add_shards(num=1)
 
     shards_population = repo.get_shards_population()
     total_population = sum(shards_population)
