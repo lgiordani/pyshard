@@ -14,7 +14,7 @@ test_requirements = [
 
 setup(
     name='pyshard',
-    version='0.0.1',
+    version='1.0.0',
     description="A simple sharding system in Python",
     author="Leonardo Giordani",
     author_email='giordani.leonardo@gmail.com',
