@@ -6,6 +6,6 @@ def _normalize_number(num, boundary):
 
 def hash_key(key, method, boundary):
     hash_function = getattr(hashlib, method)
-    hashed_key_base10 = int(hash_function(key.encode()).hexdigest(), 16)
+    hashed_key_base10 = int(hash_function(str(key).encode()).hexdigest(), 16)
 
     return _normalize_number(hashed_key_base10, boundary)

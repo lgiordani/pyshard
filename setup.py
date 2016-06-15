@@ -4,12 +4,6 @@
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
-    readme = readme_file.read()
-
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
-
 requirements = [
 ]
 
@@ -22,7 +16,6 @@ setup(
     name='pyshard',
     version='0.0.1',
     description="A simple sharding system in Python",
-    long_description=readme + '\n\n' + history,
     author="Leonardo Giordani",
     author_email='giordani.leonardo@gmail.com',
     url='https://github.com/lgiordani/pyshard',
@@ -34,4 +27,8 @@ setup(
     keywords=['version', 'management'],
     test_suite='tests',
     tests_require=test_requirements,
+    scripts=[
+        'scripts/pyshard_demo.py',
+    ]
+
 )

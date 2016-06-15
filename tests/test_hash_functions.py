@@ -1,5 +1,8 @@
 from pyshard import hash_functions as hf
 
+def test_key_may_not_be_a_string():
+    hf.hash_key(1, 'md5', 1e8)
+
 def test_md5_hash_high_boundary():
     hashed_key = hf.hash_key("some random key", 'md5', 1e8)
 

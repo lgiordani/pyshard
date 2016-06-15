@@ -2,4 +2,3 @@
 
 pytest
 tox
-fake-factory
