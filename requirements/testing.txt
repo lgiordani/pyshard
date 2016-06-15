@@ -1,0 +1,4 @@
+-r development.txt
+
+pytest
+tox
